@@ -119,7 +119,6 @@ public class ProductoController implements Initializable {
             return cel;
         };
         this.cmlOperaciones.setCellFactory(celda);
-
     }
 
     private void modificarProducto(int indice) {
@@ -168,6 +167,12 @@ public class ProductoController implements Initializable {
                     System.out.println(di.getImagen());
                     SingeltonProducto.getInstance().getLista().add(di);
                 }
+                ArrayList<Distribuidor> prove = (ArrayList<Distribuidor>) entrada.readObject();
+                SingletonProveedor.getInstance().getLista().clear();
+                for (Distribuidor pr : prove) {
+                    System.out.println(pr.getImagen());
+                    SingletonProveedor.getInstance().getLista().add(pr);
+                }
             } catch (IOException | ClassNotFoundException e) { //+FileNotFound
                 throw new RuntimeException(e);
             }
@@ -196,7 +201,7 @@ public class ProductoController implements Initializable {
     }
 
     @FXML
-    void accionSalvarProducto(MouseEvent event) {
+    void accionSalvarProducto(MouseEvent event) throws IOException {
         FileChooser fileChooser = new FileChooser();
         //     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("FES", "*.fes"));
         File selectedFile = fileChooser.showSaveDialog(this.iconCargarProducto.getScene().getWindow());
@@ -204,15 +209,18 @@ public class ProductoController implements Initializable {
             try {
                 FileOutputStream fo = new FileOutputStream(selectedFile);
                 ObjectOutputStream salida = new ObjectOutputStream(fo);
-                ArrayList<Producto> datos = SingeltonProducto.getInstance().getConversion();
-                for (Producto pr : datos) {
+                ArrayList<Producto> productos = SingeltonProducto.getInstance().getConversion();
+                for (Producto pr : productos) {
                     System.out.println(pr.getImagen());
                 }
-                salida.writeObject(datos);
+                ArrayList<Distribuidor> proveedores = SingletonProveedor.getInstance().getConversion();
+                for (Distribuidor di : proveedores) {
+                    System.out.println(di.getImagen());
+                }
+                salida.writeObject(productos);
+                salida.writeObject(proveedores);
                 salida.close();
             } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
