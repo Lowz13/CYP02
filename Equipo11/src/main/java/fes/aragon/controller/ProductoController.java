@@ -63,6 +63,7 @@ public class ProductoController implements Initializable {
     private FontAwesomeIconView iconSalvar;
 
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.cmlNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -81,20 +82,32 @@ public class ProductoController implements Initializable {
                         setGraphic(null);
                         setText(null);
                     } else {
+                        FontAwesomeIconView irProveedor = new FontAwesomeIconView(FontAwesomeIcon.DROPBOX);
+                        irProveedor.setGlyphStyle("-fx-cursor:hand;" + "-glyph-size:28px;" + "-fx-fill:#FF9E00");
+
                         FontAwesomeIconView borrarIcono = new FontAwesomeIconView(FontAwesomeIcon.TRASH);
                         borrarIcono.setGlyphStyle("-fx-cursor:hand;" + "-glyph-size:28px;" + "-fx-fill:#ff1744");
 
                         FontAwesomeIconView modificarIcono = new FontAwesomeIconView(FontAwesomeIcon.PENCIL);
                         modificarIcono.setGlyphStyle("-fx-cursor:hand;" + "-glyph-size:28px;" + "-fx-fill:#ff1744");
+
                         borrarIcono.setOnMouseClicked((MouseEvent evento) -> {
                             int indice = tblTabla.getSelectionModel().getSelectedIndex();
                             SingeltonProducto.getInstance().getLista().remove(indice);
                         });
+
                         modificarIcono.setOnMouseClicked((MouseEvent evento) -> {
                             modificarProducto(tblTabla.getSelectionModel().getSelectedIndex());
                         });
-                        HBox hBox = new HBox(modificarIcono, borrarIcono);
+
+                        irProveedor.setOnMouseClicked((MouseEvent evento) ->{
+                            abrirInformacion(tblTabla.getSelectionModel().getSelectedIndex());
+
+                        });
+
+                        HBox hBox = new HBox(irProveedor,modificarIcono, borrarIcono);
                         hBox.setStyle("-fx-alignment:center");
+                        HBox.setMargin(irProveedor, new Insets(2,2,0,3));
                         HBox.setMargin(modificarIcono, new Insets(2, 2, 0, 3));
                         HBox.setMargin(borrarIcono, new Insets(2, 2, 0, 3));
                         setGraphic(hBox);
@@ -114,6 +127,20 @@ public class ProductoController implements Initializable {
             FXMLLoader modificar = new FXMLLoader(getClass().getResource("/fes/aragon/xml/agregarProducto.fxml"));
             Parent parent = (Parent) modificar.load();
             ((NuevoProductoController) modificar.getController()).indiceProducto(indice);
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void abrirInformacion(int indice) {
+        try {
+            FXMLLoader modificar = new FXMLLoader(getClass().getResource("/fes/aragon/xml/informacion.fxml"));
+            Parent parent = (Parent) modificar.load();
+            ((InformacionController) modificar.getController()).indiceProducto(indice);
             Scene scene = new Scene(parent);
             Stage stage = new Stage();
             stage.setScene(scene);
@@ -146,6 +173,8 @@ public class ProductoController implements Initializable {
             }
         }
     }
+
+
 
     @FXML
     void accionNuevoProducto(MouseEvent event) {
@@ -189,4 +218,3 @@ public class ProductoController implements Initializable {
         }
     }
 }
-
